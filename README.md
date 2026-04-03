@@ -86,6 +86,37 @@ export TARGET_VERSION=0
 forge script script/Rollback.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
 ```
 
+## Sepolia Deployment
+
+Contracts are deployed and verified on Sepolia testnet:
+
+| Contract | Address |
+|----------|---------|
+| TokenV1 (implementation) | [`0x045242b6D992A22e8898eAc96B73E4dFCd69D398`](https://sepolia.etherscan.io/address/0x045242b6D992A22e8898eAc96B73E4dFCd69D398) |
+| VersionedBeacon | [`0x7ad1e628304D4811E82BdFE97ccD87872DA3B2bF`](https://sepolia.etherscan.io/address/0x7ad1e628304D4811E82BdFE97ccD87872DA3B2bF) |
+| BeaconProxy (token) | [`0x1dDF30003B5256557Fb08FC38b53a39E2F794158`](https://sepolia.etherscan.io/address/0x1dDF30003B5256557Fb08FC38b53a39E2F794158) |
+| TokenV2 (implementation) | [`0x20BB16Ce8F779f5947C7d49831AeD2728CF3806f`](https://sepolia.etherscan.io/address/0x20BB16Ce8F779f5947C7d49831AeD2728CF3806f) |
+
+**Deployment history:** Deploy V1 → Upgrade to V2 → Rollback to V1
+
+### Verify on-chain state
+
+```bash
+RPC=https://eth-sepolia.g.alchemy.com/v2/<YOUR_KEY>
+
+# Version count (should be 2)
+cast call 0x7ad1e628304D4811E82BdFE97ccD87872DA3B2bF "getVersionCount()(uint256)" --rpc-url $RPC
+
+# Current version index (0 = V1, after rollback)
+cast call 0x7ad1e628304D4811E82BdFE97ccD87872DA3B2bF "currentVersionIndex()(uint256)" --rpc-url $RPC
+
+# Token name through proxy
+cast call 0x1dDF30003B5256557Fb08FC38b53a39E2F794158 "name()(string)" --rpc-url $RPC
+
+# Token version through proxy
+cast call 0x1dDF30003B5256557Fb08FC38b53a39E2F794158 "version()(string)" --rpc-url $RPC
+```
+
 ## Tech Stack
 
 - Solidity 0.8.28
